@@ -1,0 +1,24 @@
+Package: soildash
+Title: SOIL_DASHBOARD
+Version: 0.0.0.9000
+Authors@R: 
+    person("AUTHOR_FIRST", "AUTHOR_LAST", , "AUTHOR@MAIL.COM", role = c("aut", "cre"))
+Description: dashboard presentation of winter soil dataset
+License: What license is it under?
+Imports: 
+    config,
+    golem,
+    shiny
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
+Suggests: 
+    knitr,
+    rmarkdown,
+    spelling,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+URL: https://github.com/kale-23/soil_dashboard
+BugReports: https://github.com/kale-23/soil_dashboard/issues
+Language: en-US
