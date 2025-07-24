@@ -23,3 +23,13 @@ Encoding: UTF-8
 Language: en-US
 LazyData: true
 RoxygenNote: 7.3.2
+Collate: 
+    'app_config.R'
+    'fct_reactive_data_connection.R'
+    'app_server.R'
+    'app_ui.R'
+    'golem_utils_server.R'
+    'golem_utils_ui.R'
+    'mod_frost.R'
+    'mod_pits.R'
+    'run_app.R'

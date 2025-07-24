@@ -5,9 +5,10 @@
 #'
 #' @noRd
 create_db_pool <- function() {
+  print(golem::get_golem_options("db_path"))
   pool_conn <- pool::dbPool(
     drv = RSQLite::SQLite(),
-    dbname = get_golem_options("db_path")
+    dbname = golem::get_golem_options("db_path")
   )
   shiny::onStop(function() {
     pool::poolClose(pool_conn)

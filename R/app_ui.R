@@ -17,39 +17,41 @@ app_ui <- function(request) {
     #golem::golem_welcome_page() # Remove this line to start building your UI
     tags$style(HTML("html, body { height: 100%; margin: 0; }")),
 
-    # main layout container
-    div(
-      style = "
+    bslib::page_fluid(
+      # main layout container
+      div(
+        style = "
       display: flex;
       flex-direction: column;
       height: 100vh;
       ",
 
-      bslib::card(
-        height = "5vh",
-        shiny::titlePanel(
-          title = "Snow and Frost data viewer",
-          windowTitle = "Snow and Frost Data Explorer"
-        )
-      ),
-
-      #TODO fix this
-      #global_ui(id = "global_1", total_height = "20vh"),
-
-      bslib::navset_card_pill(
-        height = "75vh",
-        placement = "above",
-        bslib::nav_panel(
-          title = "Frost",
-          mod_frost_ui("frost_1", pool)
+        bslib::card(
+          height = "8vh",
+          shiny::titlePanel(
+            title = "Snow and Frost data viewer",
+            windowTitle = "Snow and Frost Data Explorer"
+          )
         ),
-        bslib::nav_panel(
-          title = "Pits",
-          mod_pits_ui("pits_1", pool)
+
+        #TODO fix this
+        #global_ui(id = "global_1", total_height = "20vh"),
+
+        bslib::navset_card_pill(
+          height = "82vh",
+          placement = "above",
+          bslib::nav_panel(
+            title = "Frost",
+            mod_frost_ui("frost_1") # from mod_frost.R
+          ),
+          bslib::nav_panel(
+            title = "Pits",
+            mod_pits_ui("pits_1") # from mod_pits.R
+          )
         )
       )
+      #footer,
     )
-    #footer,
   )
 }
 
@@ -71,7 +73,7 @@ golem_add_external_resources <- function() {
     favicon(ext = "png"),
     bundle_resources(
       path = app_sys("app/www"),
-      app_title = "soildash"
+      app_title = "Soil_Dashboard" #TODO: soildash
     )
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()

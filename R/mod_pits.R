@@ -10,17 +10,17 @@
 mod_pits_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    card(
-      card_body(
-        layout_sidebar(
+    bslib::card(
+      bslib::card_body(
+        bslib::layout_sidebar(
           #sidebar = map(names(df), ~ make_ui(df[[.x]], .x, id)),
           #TODO: fix
-          sidebar = card(),
-          card(
-            card_header(
+          sidebar = bslib::card(),
+          bslib::card(
+            bslib::card_header(
               "pits 1"
             ),
-            tableOutput(ns("pits_plot"))
+            DT::dataTableOutput(ns("pits_plot"))
           )
         )
       )
@@ -31,14 +31,17 @@ mod_pits_ui <- function(id) {
 #' pits Server Functions
 #'
 #' @noRd
-mod_pits_server <- function(id, pool) {
+mod_pits_server <- function(id, data) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    output$pits_plot <- renderTable({
-      trigger()
-      pool::dbReadTable(pool, "pits_data")
+    output$pits_plot <- DT::renderDataTable({
+      data()
     })
+
+    #output$pits_plot <- renderTable({
+    #  pool |> dplyr::tbl("pits_data")
+    #})
   })
 }
 

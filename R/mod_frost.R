@@ -1,5 +1,4 @@
-#' frost UI Function
-#'
+#' @title frost UI Function
 #' @description A shiny Module.
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
@@ -11,17 +10,17 @@ mod_frost_ui <- function(id) {
   ns <- NS(id)
 
   tagList(
-    card(
-      card_body(
-        layout_sidebar(
+    bslib::card(
+      bslib::card_body(
+        bslib::layout_sidebar(
           #sidebar = map(names(df), ~ make_ui(df[[.x]], .x, id)),
           #TODO: fix
-          sidebar = card(),
-          card(
-            card_header(
+          sidebar = bslib::card(),
+          bslib::card(
+            bslib::card_header(
               "frost 1"
             ),
-            tableOutput(ns("frost_plot"))
+            DT::dataTableOutput(ns("frost_plot"))
           )
         )
       )
@@ -32,15 +31,13 @@ mod_frost_ui <- function(id) {
 #' frost Server Functions
 #'
 #' @noRd
-mod_frost_server <- function(id, pool) {
+mod_frost_server <- function(id, data) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    output$frost_plot <- renderTable({
-      trigger()
-      pool::dbReadTable(pool, "frost_data")
+    output$frost_plot <- DT::renderDataTable({
+      data()
     })
-
     #selected <- reactive({
     #  # make sure we have the react_data
     #  req(react_data())
