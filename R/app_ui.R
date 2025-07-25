@@ -42,11 +42,11 @@ app_ui <- function(request) {
           placement = "above",
           bslib::nav_panel(
             title = "Frost",
-            mod_frost_ui("frost_1") # from mod_frost.R
+            mod_gen_ui("frost_1") # from mod_frost.R
           ),
           bslib::nav_panel(
             title = "Pits",
-            mod_pits_ui("pits_1") # from mod_pits.R
+            mod_gen_ui("pits_1") # from mod_pits.R
           )
         )
       )

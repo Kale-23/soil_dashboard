@@ -12,6 +12,6 @@ pits <- reactive_data_connection(paste0(common, "pits_final_data.csv"))
 #' @import shiny
 #' @noRd
 app_server <- function(input, output, session) {
-  mod_frost_server("frost_1", frost)
-  mod_pits_server("pits_1", pits)
+  mod_gen_server("frost_1", frost)
+  mod_gen_server("pits_1", pits)
 }
