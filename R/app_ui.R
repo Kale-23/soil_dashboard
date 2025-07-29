@@ -35,7 +35,7 @@ app_ui <- function(request) {
         ),
 
         #TODO fix this
-        #global_ui(id = "global_1", total_height = "20vh"),
+        mod_global_ui("global_1", tot_height = "15vh"),
 
         bslib::navset_card_pill(
           height = "82vh",
@@ -74,8 +74,9 @@ golem_add_external_resources <- function() {
     bundle_resources(
       path = app_sys("app/www"),
       app_title = "Soil_Dashboard" #TODO: soildash
-    )
+    ),
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()
+    dyExtraHead()
   )
 }

@@ -23,6 +23,7 @@ attachment::att_amend_desc()
 #golem::add_module(name = "frost", with_test = FALSE) # Name of the module
 #golem::add_module(name = "pits", with_test = FALSE) # Name of the module
 golem::add_module(name = "gen_ui", with_teset = FALSE) # used for both frost/pits
+golem::add_module(name = "global_ui", with_teset = FALSE) # used to do filtering for both frost/pits
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*
@@ -31,6 +32,7 @@ golem::add_fct("reactive_data_connection", with_test = FALSE)
 golem::add_fct("dygraph_setup", with_test = FALSE)
 #golem::add_fct("db_render_table", with_test = TRUE)
 #golem::add_fct("db_table_output", with_test = TRUE)
+golem::add_js_file("dygraph-extra")
 
 ## External resources
 ## Creates .js and .css files at inst/app/www
