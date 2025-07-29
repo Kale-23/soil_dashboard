@@ -80,7 +80,10 @@ mod_gen_server <- function(id, data, global_filters) {
 
       # filter data based on selected columns
       df <- filtered_data() |>
-        dplyr::select(!dplyr::where(is.numeric), dplyr::all_of(input$selected_cols))
+        dplyr::select(
+          !dplyr::where(is.numeric) & !dplyr::where(is.logical),
+          dplyr::all_of(input$selected_cols)
+        )
 
       # render datatable
       DT::datatable(df)
@@ -118,33 +121,32 @@ mod_gen_server <- function(id, data, global_filters) {
     # in charge of creating a dygraph for each dataframe
     shiny::observe({
       req(dygraph_data())
-      output$dygraph_1 <- dygraphs::renderDygraph({
-        dygraph_setup(dygraph_data()[[1]]$df, dygraph_data()[[1]]$col)
-      })
+      #output$dygraph_1 <- dygraphs::renderDygraph({
+      #  dygraph_setup(dygraph_data()[[1]]$df, dygraph_data()[[1]]$col)
+      #})
 
       # create a dygraph for each selected column
-      #lapply(seq_along(dygraph_data()), function(i) {
-      #  local({
-      #    df_col <- dygraph_data()
-      #    df <- df_col[[i]]$df
-      #    col <- df_col[[i]]$col
+      lapply(seq_along(dygraph_data()), function(i) {
+        local({
+          df_col <- dygraph_data()
+          df <- df_col[[i]]$df
+          col <- df_col[[i]]$col
 
-      #    output[[paste0("dygraph_", i)]] <- dygraphs::renderDygraph({
-      #      dygraph_setup(df, col)
-      #    })
-      #  })
-      #})
+          output[[paste0("dygraph_", i)]] <- dygraphs::renderDygraph({
+            dygraph_setup(df, col)
+          })
+        })
+      })
     })
 
     # in charge of creating ns info for each dygraph
     output$all_plots <- shiny::renderUI({
-      h3("Time Series Plots")
       req(dygraph_data())
       tagList(
-        dygraphs::dygraphOutput(ns("dygraph_1"))
-        #lapply(seq_along(dygraph_data()), function(i) {
-        #  dygraphs::dygraphOutput(ns(paste0("dygraph_", i)))
-        #})
+        #dygraphs::dygraphOutput(ns("dygraph_1"))
+        lapply(seq_along(dygraph_data()), function(i) {
+          dygraphs::dygraphOutput(ns(paste0("dygraph_", i)))
+        })
       )
     })
   })
