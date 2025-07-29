@@ -13,12 +13,12 @@ mod_gen_ui <- function(id) {
     bslib::layout_sidebar(
       sidebar = shiny::tagList(
         shiny::uiOutput(ns("col_selector")),
-        dyDownload(
-          id = ns("dygraph_plot"),
-          label = "Download Plot",
-          usetitle = TRUE,
-          asbutton = TRUE
-        ),
+        #dyDownload(
+        #  id = ns("dygraph_plot"),
+        #  label = "Download Plot",
+        #  usetitle = TRUE,
+        #  asbutton = TRUE
+        #),
         shiny::downloadButton(outputId = ns("download_data"), "Download")
       ),
       shiny::tagList(
@@ -115,33 +115,37 @@ mod_gen_server <- function(id, data, global_filters) {
       })
     })
 
+    # in charge of creating a dygraph for each dataframe
+    shiny::observe({
+      req(dygraph_data())
+      output$dygraph_1 <- dygraphs::renderDygraph({
+        dygraph_setup(dygraph_data()[[1]]$df, dygraph_data()[[1]]$col)
+      })
+
+      # create a dygraph for each selected column
+      #lapply(seq_along(dygraph_data()), function(i) {
+      #  local({
+      #    df_col <- dygraph_data()
+      #    df <- df_col[[i]]$df
+      #    col <- df_col[[i]]$col
+
+      #    output[[paste0("dygraph_", i)]] <- dygraphs::renderDygraph({
+      #      dygraph_setup(df, col)
+      #    })
+      #  })
+      #})
+    })
+
     # in charge of creating ns info for each dygraph
     output$all_plots <- shiny::renderUI({
       h3("Time Series Plots")
       req(dygraph_data())
       tagList(
-        lapply(seq_along(dygraph_data()), function(i) {
-          dygraphs::dygraphOutput(ns(paste0("dygraph_", i)))
-        })
+        dygraphs::dygraphOutput(ns("dygraph_1"))
+        #lapply(seq_along(dygraph_data()), function(i) {
+        #  dygraphs::dygraphOutput(ns(paste0("dygraph_", i)))
+        #})
       )
-    })
-
-    # in charge of creating a dygraph for each dataframe
-    shiny::observe({
-      req(dygraph_data())
-
-      # create a dygraph for each selected column
-      lapply(seq_along(dygraph_data()), function(i) {
-        local({
-          df_col <- dygraph_data()
-          df <- df_col[[i]]$df
-          col <- df_col[[i]]$col
-
-          output[[paste0("dygraph_", i)]] <- dygraphs::renderDygraph({
-            dygraph_setup(df, col)
-          })
-        })
-      })
     })
   })
 }
