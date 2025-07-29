@@ -31,8 +31,6 @@ Collate:
     'app_ui.R'
     'dygraph-extra-shiny.R'
     'fct_dygraph_setup.R'
-    'golem_utils_server.R'
-    'golem_utils_ui.R'
     'mod_gen_ui.R'
     'mod_global_ui.R'
     'run_app.R'

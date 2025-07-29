@@ -5,19 +5,18 @@
 #' @return dygraphs::renderDygraph
 #'
 #' @noRd
-dygraph_setup <- function(data, filter_list) {
-  df <- data
-  df <- dplyr::arrange(df, date) |>
-    dplyr::select(dplyr::all_of(c("date", filter_list)))
-  df_index <- as.Date(df$date)
-  df_xts <- xts::xts(df, order.by = df_index)
+
+dygraph_setup <- function(data, column_name) {
+  df_index <- as.Date(data()$date)
+  df_xts <- xts::xts(data(), order.by = df_index)
   dygraphs::dygraph(df_xts) |>
+    dygraphs::dyAxis("y", label = column_name) |>
     dygraphs::dyRangeSelector(height = 20) |>
     dygraphs::dyLegend(width = 500) |>
     dygraphs::dyOptions(
       drawPoints = TRUE,
       pointSize = 2,
-      colors = RColorBrewer::brewer.pal(length(filter_list), "Set1")
+      colors = RColorBrewer::brewer.pal(3, "Set1")
     ) |>
     dygraphs::dyCallbacks(drawCallback = dyRegister())
 }

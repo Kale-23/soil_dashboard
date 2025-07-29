@@ -22,7 +22,7 @@ mod_gen_ui <- function(id) {
         shiny::downloadButton(outputId = ns("download_data"), "Download")
       ),
       shiny::tagList(
-        dygraphs::dygraphOutput(ns("dygraph_plot")),
+        shiny::uiOutput(ns("all_plots")),
         DT::dataTableOutput(ns("dt_table"))
       )
     )
@@ -73,18 +73,6 @@ mod_gen_server <- function(id, data, global_filters) {
       )
     })
 
-    # output time series plot
-    output$dygraph_plot <- dygraphs::renderDygraph({
-      req(filtered_data())
-      req(input$selected_cols)
-
-      # render dygraph using the selected columns
-      dygraph_setup(
-        filtered_data(),
-        input$selected_cols
-      )
-    })
-
     # output data table at bottom
     output$dt_table <- DT::renderDataTable({
       req(filtered_data())
@@ -107,30 +95,52 @@ mod_gen_server <- function(id, data, global_filters) {
       }
     )
 
-    output$dygraphs <- shiny::reactive({
+    # in charge of creating dygraph data for all dygraphs
+    dygraph_data <- shiny::reactive({
       req(filtered_data())
       req(input$selected_cols)
 
-      # split data into multiple dataframes where each one is a numeric column
-      # specified by input$selected_cols, and split by site_name
-      # each will get its own dy graph
-      dfs <- list()
-      for (col in input$selected_cols) {
+      # create a list of data frames for each selected column
+      lapply(input$selected_cols, function(col) {
         df <- filtered_data() |>
-          dplyr::select(c("date", "site_name", col)) |>
+          dplyr::select(date, site_name, value = all_of(col)) |>
           tidyr::pivot_wider(
             names_from = "site_name",
-            values_from = col
-          )
-        # put both the new df and column name into a list so that dygraph_setup
-        # can see the data and the column name for the Y axis label
-        ret_values <- list(df, col)
-        dfs <- list(dfs, ret_values)
-      }
+            values_from = "value",
+            values_fn = mean
+          ) |>
+          dplyr::arrange(date)
 
-      # return a list of dygraphs for each dataframe
-      lapply(dfs, function(df) {
-        dygraph_setup(df, colnames(df)[2:length(colnames(df))])
+        list(df = df, col = col)
+      })
+    })
+
+    # in charge of creating ns info for each dygraph
+    output$all_plots <- shiny::renderUI({
+      h3("Time Series Plots")
+      req(dygraph_data())
+      tagList(
+        lapply(seq_along(dygraph_data()), function(i) {
+          dygraphs::dygraphOutput(ns(paste0("dygraph_", i)))
+        })
+      )
+    })
+
+    # in charge of creating a dygraph for each dataframe
+    shiny::observe({
+      req(dygraph_data())
+
+      # create a dygraph for each selected column
+      lapply(seq_along(dygraph_data()), function(i) {
+        local({
+          df_col <- dygraph_data()
+          df <- df_col[[i]]$df
+          col <- df_col[[i]]$col
+
+          output[[paste0("dygraph_", i)]] <- dygraphs::renderDygraph({
+            dygraph_setup(df, col)
+          })
+        })
       })
     })
   })
