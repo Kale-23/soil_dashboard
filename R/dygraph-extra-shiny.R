@@ -1,44 +1,38 @@
 ## This is an accompanying R script for the main script: dygraph-extra.js
 ## Refer to the README or the JavaScript file for more details.
-dy_extra_js_dependency <- function() {
-  htmltools::htmlDependency(
-    name = "dygraphs-custom-export",
-    version = "1.0.0", # Version for your custom JS
-    src = "www", # Path relative to inst/app/
-    file = "dygraph-extra.js", # The specific file to load
-    # load dygraphs library before extra functionality
-    package = "dygraphs",
-    #head = paste0(
-    #  "
-    #  <script type='text/javascript' src='",
-    #  system.file("www", "jszip.min.js", package = "soildash"),
-    #  "'></script>
-    #"
-    #)
+dygraph_dependency <- function() {
+  tagList(
+    htmltools::htmlDependency(
+      name = "dygraph-combined",
+      version = "1.1.1",
+      src = c(file = "app/www"),
+      script = "dygraph-combined.js",
+    ),
+    htmltools::htmlDependency(
+      name = "jszip",
+      version = "3.10.1",
+      src = c(file = "app/www"),
+      script = "jszip.min.js"
+    ),
+    htmltools::htmlDependency(
+      name = "dygraph-extra",
+      version = "0.1.0",
+      src = c(file = "app/www"),
+      script = "dygraph-extra.js"
+    )
   )
 }
-
-dyExtraHead =
-  ## Collection of tags you would usually want to add to
-  ##  `tags$head` when using dygraph-extra in shiny.
-  ## e.g. tags$head(dyExtraHead())
-  function() {
-    tagList(
-      dy_extra_js_dependency(),
-      ## Load the JS library, this should be located within
-      ##  the /www/ subfolder of the shiny app.
-      #tags$script(src = "dygraph-extra.js"),
-      ## Ensure dygraphs resize correctly on tab switch
-      tags$script('Dygraph.Export.ShinyTabResize();'),
-      ## Ensure dygraphs clears selection correctly on mouseleave
-      tags$script('Dygraph.Export.AutoClear();')
-    )
-  }
 
 dyRegister =
   ## Pass to drawCallback when creating a dygraph
   ## e.g. dyCallbacks(drawCallback = dyRegister())
-  function() "Dygraph.Export.Register"
+  function() {
+    #htmlwidgets::JS("function(dg, isInitial) { Dygraph.Export.Register(dg); }")
+    htmlwidgets::JS(
+      "function(dg, isInitial) { if (typeof Dygraph !== 'undefined' && Dygraph.Export && typeof Dygraph.Export.Register === 'function') { Dygraph.Export.Register(dg); } else { console.warn('Dygraph.Export not available yet'); } }"
+    )
+    #"Dygraph.Export.Register"
+  }
 
 dyDownload =
   ## Create a link with given label

@@ -71,12 +71,12 @@ golem_add_external_resources <- function() {
 
   tags$head(
     favicon(ext = "png"),
+    #dygraph_dependency()
     bundle_resources(
       path = app_sys("app/www"),
-      app_title = "Soil_Dashboard" #TODO: soildash
+      app_title = "soildash" #TODO: soildash
     ),
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()
-    #dyExtraHead()
   )
 }

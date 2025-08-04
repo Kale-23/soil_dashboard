@@ -13,12 +13,7 @@ mod_gen_ui <- function(id) {
     bslib::layout_sidebar(
       sidebar = shiny::tagList(
         shiny::uiOutput(ns("col_selector")),
-        #dyDownload(
-        #  id = ns("dygraph_plot"),
-        #  label = "Download Plot",
-        #  usetitle = TRUE,
-        #  asbutton = TRUE
-        #),
+        shiny::uiOutput(ns("dy_downloads")),
         shiny::downloadButton(outputId = ns("download_data"), "Download")
       ),
       shiny::tagList(
@@ -143,9 +138,22 @@ mod_gen_server <- function(id, data, global_filters) {
     output$all_plots <- shiny::renderUI({
       req(dygraph_data())
       tagList(
-        #dygraphs::dygraphOutput(ns("dygraph_1"))
         lapply(seq_along(dygraph_data()), function(i) {
           dygraphs::dygraphOutput(ns(paste0("dygraph_", i)))
+        })
+      )
+    })
+
+    output$dy_downloads <- shiny::renderUI({
+      req(dygraph_data())
+      tagList(
+        lapply(seq_along(dygraph_data()), function(i) {
+          dyDownload(
+            id = ns(paste0("dygraph_", i)),
+            label = paste0("Download Plot ", i),
+            usetitle = TRUE,
+            asbutton = TRUE
+          )
         })
       )
     })
