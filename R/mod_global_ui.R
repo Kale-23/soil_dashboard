@@ -33,20 +33,21 @@ mod_global_server <- function(id, frost, pits) {
       frost_locs <- unique(frost()$site_name)
       pits_locs <- unique(pits()$site_name)
       all_locs <- unique(c(frost_locs, pits_locs))
-      shiny::selectInput(
+      all_locs_names <- col_names_conversions()[all_locs]
+      shiny::checkboxGroupInput(
         inputId = ns("location"),
-        label = "Select Location",
-        multiple = TRUE,
-        choices = all_locs,
+        label = "Select Monitoring Locations",
+        choiceNames = unname(all_locs_names),
+        choiceValues = all_locs,
         selected = all_locs
       )
     })
     output$date_type_selector <- shiny::renderUI({
       shiny::radioButtons(
         inputId = ns("date_type"),
-        label = "Select Date Type",
-        choices = c("All Data", "By Year"),
-        selected = "All Data"
+        label = "Time Series Scope",
+        choices = c("Full Dataset", "Seasonal"),
+        selected = "Full Dataset"
       )
     })
     output$date_range_selector <- shiny::renderUI({

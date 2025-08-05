@@ -11,37 +11,15 @@ dygraph_dependency <- function() {
     ## Ensure dygraphs clears selection correctly on mouseleave
     tags$script('Dygraph.Export.AutoClear();')
   )
-  #tagList(
-  #  htmltools::htmlDependency(
-  #    name = "dygraph-combined",
-  #    version = "1.1.1",
-  #    src = c(file = "app/www"),
-  #    script = "dygraph-combined.js",
-  #  ),
-  #  htmltools::htmlDependency(
-  #    name = "jszip",
-  #    version = "3.10.1",
-  #    src = c(file = "app/www"),
-  #    script = "jszip.min.js"
-  #  ),
-  #  htmltools::htmlDependency(
-  #    name = "dygraph-extra",
-  #    version = "0.1.0",
-  #    src = c(file = "app/www"),
-  #    script = "dygraph-extra.js"
-  #  )
-  #)
 }
 
 dyRegister =
   ## Pass to drawCallback when creating a dygraph
   ## e.g. dyCallbacks(drawCallback = dyRegister())
   function() {
-    #htmlwidgets::JS("function(dg, isInitial) { Dygraph.Export.Register(dg); }")
     htmlwidgets::JS(
       "function(dg, isInitial) { if (typeof Dygraph !== 'undefined' && Dygraph.Export && typeof Dygraph.Export.Register === 'function') { Dygraph.Export.Register(dg); } else { console.warn('Dygraph.Export not available yet'); } }"
     )
-    #"Dygraph.Export.Register"
   }
 
 dyDownload =

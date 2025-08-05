@@ -10,15 +10,46 @@ mod_gen_ui <- function(id) {
   ns <- NS(id)
 
   tagList(
+    tags$style(HTML(
+      "
+      #all_plots_container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        overflow-y: auto;
+      }
+      .dygraph-plot-container {
+        flex: 1;
+      }
+      "
+    )),
+
     bslib::layout_sidebar(
-      sidebar = shiny::tagList(
+      sidebar = bslib::sidebar(
+        width = 350,
         shiny::uiOutput(ns("col_selector")),
         shiny::uiOutput(ns("dy_downloads")),
-        shiny::downloadButton(outputId = ns("download_data"), "Download")
+        shiny::downloadButton(outputId = ns("download_data"), "Download Filtered Data")
       ),
       shiny::tagList(
-        shiny::uiOutput(ns("all_plots")),
-        DT::dataTableOutput(ns("dt_table"))
+        shiny::div(
+          #id = "all_plots_container",
+          bslib::accordion(
+            bslib::accordion_panel(
+              title = "Time Series Plots",
+              icon = bsicons::bs_icon("graph-up"),
+              open = TRUE,
+              shiny::uiOutput(ns("all_plots"), fill = TRUE)
+            ),
+            bslib::accordion_panel(
+              title = "Filtered Data Table",
+              icon = bsicons::bs_icon("table"),
+              open = FALSE,
+              DT::dataTableOutput(ns("dt_table"))
+            )
+          )
+        )
       )
     )
   )
@@ -53,18 +84,24 @@ mod_gen_server <- function(id, data, global_filters) {
       df
     })
 
+    # dynamically create column selector for time series plot
+    # uses regular "data()" so plots do not reload each time user updates global filters
     output$col_selector <- renderUI({
-      # dynamically create column selector for time series plot
-      # uses regular "data()" so plots do not reload each time user updates global filters
       req(data())
 
-      df <- dplyr::select(data(), dplyr::where(is.numeric))
+      df <- data() |>
+        dplyr::select(dplyr::where(is.numeric)) |>
+        dplyr::select(-dplyr::any_of(non_dygraph_numeric_cols()))
+
+      cols <- colnames(df)[-1] # exclude the first column (date)
+      col_names <- col_names_conversions()[cols]
 
       shiny::checkboxGroupInput(
         inputId = ns("selected_cols"),
         label = "Select Columns",
-        choices = colnames(df)[2:length(colnames(df))],
-        selected = colnames(df)[2]
+        choiceNames = unname(col_names),
+        choiceValues = cols,
+        selected = cols[1], # default selection
       )
     })
 
@@ -84,7 +121,7 @@ mod_gen_server <- function(id, data, global_filters) {
       DT::datatable(df)
     })
 
-    # handles download button
+    # handles download button for the filtered dataset
     output$download_data <- shiny::downloadHandler(
       filename = paste0(id, "_dataset.csv"),
       content = function(file) {
@@ -93,34 +130,51 @@ mod_gen_server <- function(id, data, global_filters) {
       }
     )
 
-    # in charge of creating dygraph data for all dygraphs
+    # dynamically creates dygraph data based on selected columns
     dygraph_data <- shiny::reactive({
       req(filtered_data())
       req(input$selected_cols)
+      req(global_filters$date_type())
 
-      # create a list of data frames for each selected column
       lapply(input$selected_cols, function(col) {
-        df <- filtered_data() |>
-          dplyr::select(date, site_name, value = all_of(col)) |>
-          tidyr::pivot_wider(
-            names_from = "site_name",
-            values_from = "value",
-            values_fn = mean
-          ) |>
-          dplyr::arrange(date)
-
+        if (global_filters$date_type() == "Seasonal") {
+          df <- filtered_data() |>
+            dplyr::select(date, site_name, water_year, value = all_of(col)) |>
+            dplyr::mutate(
+              site_year = paste0(site_name, "_", water_year)
+            ) |>
+            tidyr::pivot_wider(
+              names_from = "site_year",
+              values_from = "value",
+              values_fn = mean
+            ) |>
+            dplyr::mutate(
+              date = dplyr::if_else(
+                lubridate::year(date) >= lubridate::year(as.Date(water_year)),
+                as.Date(format(date, "2000-%m-%d")),
+                as.Date(format(date, "1999-%m-%d")) #TODO this doesnt work yet
+              )
+            ) |>
+            dplyr::select(-water_year, -site_name) |>
+            dplyr::arrange(date)
+        } else {
+          df <- filtered_data() |>
+            dplyr::select(date, site_name, value = all_of(col)) |>
+            tidyr::pivot_wider(
+              names_from = "site_name",
+              values_from = "value",
+              values_fn = mean
+            ) |>
+            dplyr::arrange(date)
+        }
         list(df = df, col = col)
       })
     })
 
-    # in charge of creating a dygraph for each dataframe
+    # dynamically creates dygraphs for each selected column
     shiny::observe({
       req(dygraph_data())
-      #output$dygraph_1 <- dygraphs::renderDygraph({
-      #  dygraph_setup(dygraph_data()[[1]]$df, dygraph_data()[[1]]$col)
-      #})
 
-      # create a dygraph for each selected column
       lapply(seq_along(dygraph_data()), function(i) {
         local({
           df_col <- dygraph_data()
@@ -134,16 +188,23 @@ mod_gen_server <- function(id, data, global_filters) {
       })
     })
 
-    # in charge of creating ns info for each dygraph
+    # dynamically creates ns info for each dygraph
     output$all_plots <- shiny::renderUI({
       req(dygraph_data())
       tagList(
         lapply(seq_along(dygraph_data()), function(i) {
-          dygraphs::dygraphOutput(ns(paste0("dygraph_", i)))
+          div(
+            class = "dygraph-plot-container",
+            bslib::card(
+              title = dygraph_data()[[i]]$col,
+              dygraphs::dygraphOutput(ns(paste0("dygraph_", i)))
+            )
+          )
         })
       )
     })
 
+    # creates download buttons for each dygraph
     output$dy_downloads <- shiny::renderUI({
       req(dygraph_data())
       tagList(

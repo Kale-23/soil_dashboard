@@ -36,10 +36,10 @@ app_ui <- function(request) {
         ),
 
         #TODO fix this
-        mod_global_ui("global_1", tot_height = "15vh"),
+        mod_global_ui("global_1", tot_height = "20vh"),
 
         bslib::navset_card_pill(
-          height = "82vh",
+          height = "80vh",
           placement = "above",
           bslib::nav_panel(
             title = "Frost",
