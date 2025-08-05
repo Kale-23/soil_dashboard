@@ -1,26 +1,36 @@
 ## This is an accompanying R script for the main script: dygraph-extra.js
 ## Refer to the README or the JavaScript file for more details.
 dygraph_dependency <- function() {
+  ## Collection of tags you would usually want to add to
+  ##  `tags$head` when using dygraph-extra in shiny.
+  ## e.g. tags$head(dyExtraHead())
   tagList(
-    htmltools::htmlDependency(
-      name = "dygraph-combined",
-      version = "1.1.1",
-      src = c(file = "app/www"),
-      script = "dygraph-combined.js",
-    ),
-    htmltools::htmlDependency(
-      name = "jszip",
-      version = "3.10.1",
-      src = c(file = "app/www"),
-      script = "jszip.min.js"
-    ),
-    htmltools::htmlDependency(
-      name = "dygraph-extra",
-      version = "0.1.0",
-      src = c(file = "app/www"),
-      script = "dygraph-extra.js"
-    )
+    ## Load the JS library, this should be located within
+    ## Ensure dygraphs resize correctly on tab switch
+    tags$script('Dygraph.Export.ShinyTabResize();'),
+    ## Ensure dygraphs clears selection correctly on mouseleave
+    tags$script('Dygraph.Export.AutoClear();')
   )
+  #tagList(
+  #  htmltools::htmlDependency(
+  #    name = "dygraph-combined",
+  #    version = "1.1.1",
+  #    src = c(file = "app/www"),
+  #    script = "dygraph-combined.js",
+  #  ),
+  #  htmltools::htmlDependency(
+  #    name = "jszip",
+  #    version = "3.10.1",
+  #    src = c(file = "app/www"),
+  #    script = "jszip.min.js"
+  #  ),
+  #  htmltools::htmlDependency(
+  #    name = "dygraph-extra",
+  #    version = "0.1.0",
+  #    src = c(file = "app/www"),
+  #    script = "dygraph-extra.js"
+  #  )
+  #)
 }
 
 dyRegister =
