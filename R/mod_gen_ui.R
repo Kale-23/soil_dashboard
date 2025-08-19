@@ -138,6 +138,7 @@ mod_gen_server <- function(id, data, global_filters) {
 
       lapply(input$selected_cols, function(col) {
         if (global_filters$date_type() == "Seasonal") {
+          print(filtered_data())
           df <- filtered_data() |>
             dplyr::select(date, site_name, water_year, value = all_of(col)) |>
             dplyr::mutate(
@@ -150,7 +151,7 @@ mod_gen_server <- function(id, data, global_filters) {
             ) |>
             dplyr::mutate(
               date = dplyr::if_else(
-                lubridate::year(date) >= lubridate::year(as.Date(water_year)),
+                lubridate::year(date) >= water_year,
                 as.Date(format(date, "2000-%m-%d")),
                 as.Date(format(date, "1999-%m-%d")) #TODO this doesnt work yet
               )
@@ -180,9 +181,14 @@ mod_gen_server <- function(id, data, global_filters) {
           df_col <- dygraph_data()
           df <- df_col[[i]]$df
           col <- df_col[[i]]$col
+          if ("site_year" %in% colnames(df)) {
+            seasonal <- TRUE
+          } else {
+            seasonal <- FALSE
+          }
 
           output[[paste0("dygraph_", i)]] <- dygraphs::renderDygraph({
-            dygraph_setup(df, col)
+            dygraph_setup(df, col, seasonal)
           })
         })
       })

@@ -12,7 +12,8 @@ Imports:
     golem,
     logger,
     shiny,
-    dygraphs
+    dygraphs,
+    bslib
 Suggests:
     knitr,
     rmarkdown,

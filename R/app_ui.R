@@ -5,7 +5,7 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @import bslib
-#' @importFrom shiny tags div HTML
+#' @importFrom shiny tags div HTML tagList
 #'
 #' @noRd
 #'
