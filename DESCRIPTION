@@ -13,7 +13,8 @@ Imports:
     logger,
     shiny,
     dygraphs,
-    bslib
+    bslib,
+    pkgload
 Suggests:
     knitr,
     rmarkdown,

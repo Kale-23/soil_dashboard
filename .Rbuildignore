@@ -9,3 +9,6 @@ $run_dev.*
 ^Meta$
 ^README\.Rmd$
 ^CODE_OF_CONDUCT\.md$
+^app\.R$
+^rsconnect$
+^\.rscignore$

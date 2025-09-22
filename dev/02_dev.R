@@ -31,9 +31,11 @@ golem::add_module(name = "global_ui", with_teset = FALSE) # used to do filtering
 golem::add_utils("gen_utils", with_test = FALSE)
 golem::add_fct("reactive_data_connection", with_test = FALSE)
 golem::add_fct("dygraph_setup", with_test = FALSE)
+golem::add_fct("on_load", with_test = FALSE)
 #golem::add_fct("db_render_table", with_test = TRUE)
 #golem::add_fct("db_table_output", with_test = TRUE)
 golem::add_js_file("dygraph-extra")
+golem::add_shinyserver_file()
 
 ## External resources
 ## Creates .js and .css files at inst/app/www

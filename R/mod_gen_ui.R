@@ -29,7 +29,7 @@ mod_gen_ui <- function(id) {
       sidebar = bslib::sidebar(
         width = 350,
         shiny::uiOutput(ns("col_selector")),
-        shiny::uiOutput(ns("dy_downloads")),
+        #shiny::uiOutput(ns("dy_downloads")),
         shiny::downloadButton(outputId = ns("download_data"), "Download Filtered Data")
       ),
       shiny::tagList(
@@ -136,90 +136,43 @@ mod_gen_server <- function(id, data, global_filters) {
       req(input$selected_cols)
       req(global_filters$date_type())
 
-      lapply(input$selected_cols, function(col) {
-        if (global_filters$date_type() == "Seasonal") {
-          print(filtered_data())
-          df <- filtered_data() |>
-            dplyr::select(date, site_name, water_year, value = all_of(col)) |>
-            dplyr::mutate(
-              site_year = paste0(site_name, "_", water_year)
-            ) |>
-            tidyr::pivot_wider(
-              names_from = "site_year",
-              values_from = "value",
-              values_fn = mean
-            ) |>
-            dplyr::mutate(
-              date = dplyr::if_else(
-                lubridate::year(date) >= water_year,
-                as.Date(format(date, "2000-%m-%d")),
-                as.Date(format(date, "1999-%m-%d")) #TODO this doesnt work yet
-              )
-            ) |>
-            dplyr::select(-water_year, -site_name) |>
-            dplyr::arrange(date)
-        } else {
-          df <- filtered_data() |>
-            dplyr::select(date, site_name, value = all_of(col)) |>
-            tidyr::pivot_wider(
-              names_from = "site_name",
-              values_from = "value",
-              values_fn = mean
-            ) |>
-            dplyr::arrange(date)
-        }
+      date_type <- global_filters$date_type()
+
+      purrr::map(input$selected_cols, function(col) {
+        df <- prepare_dygraph_data(filtered_data(), col, date_type)
         list(df = df, col = col)
-      })
-    })
-
-    # dynamically creates dygraphs for each selected column
-    shiny::observe({
-      req(dygraph_data())
-
-      lapply(seq_along(dygraph_data()), function(i) {
-        local({
-          df_col <- dygraph_data()
-          df <- df_col[[i]]$df
-          col <- df_col[[i]]$col
-          if ("site_year" %in% colnames(df)) {
-            seasonal <- TRUE
-          } else {
-            seasonal <- FALSE
-          }
-
-          output[[paste0("dygraph_", i)]] <- dygraphs::renderDygraph({
-            dygraph_setup(df, col, seasonal)
-          })
-        })
       })
     })
 
     # dynamically creates ns info for each dygraph
     output$all_plots <- shiny::renderUI({
       req(dygraph_data())
+
       tagList(
-        lapply(seq_along(dygraph_data()), function(i) {
+        lapply(dygraph_data(), function(df_col) {
+          plot_id <- paste0("dygraph_", df_col$col)
+          seasonal <- "site_year" %in% colnames(df_col$df)
+
+          output[[paste0("dygraph_", col)]] <- dygraphs::renderDygraph({
+            dygraph_setup(df, col, seasonal)
+          })
+
+          shiny::tags$script(
+            glue::glue("console.log('Rendering plot with ID: {plot_id}');")
+          )
+
           div(
             class = "dygraph-plot-container",
             bslib::card(
-              title = dygraph_data()[[i]]$col,
-              dygraphs::dygraphOutput(ns(paste0("dygraph_", i)))
+              title = col_names_conversions()[[df_col$col]],
+              dygraphs::dygraphOutput(ns(plot_id)),
+              dyDownload(
+                id = ns(plot_id),
+                label = paste0("Download Plot"),
+                usetitle = FALSE,
+                asbutton = TRUE
+              )
             )
-          )
-        })
-      )
-    })
-
-    # creates download buttons for each dygraph
-    output$dy_downloads <- shiny::renderUI({
-      req(dygraph_data())
-      tagList(
-        lapply(seq_along(dygraph_data()), function(i) {
-          dyDownload(
-            id = ns(paste0("dygraph_", i)),
-            label = paste0("Download Plot ", i),
-            usetitle = TRUE,
-            asbutton = TRUE
           )
         })
       )

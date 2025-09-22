@@ -49,3 +49,34 @@ dygraph_setup <- function(data, column_name, seasonal = FALSE) {
       dygraphs::dyCallbacks(drawCallback = dyRegister())
   }
 }
+
+prepare_dygraph_data <- function(data, col, date_type) {
+  if (date_type == "Seasonal") {
+    data |>
+      dplyr::select(date, site_name, water_year, value = all_of(col)) |>
+      dplyr::mutate(site_year = paste0(site_name, "_", water_year)) |>
+      tidyr::pivot_wider(
+        names_from = "site_year",
+        values_from = "value",
+        values_fn = mean
+      ) |>
+      dplyr::mutate(
+        date = dplyr::if_else(
+          lubridate::year(date) >= water_year,
+          as.Date(format(date, "2000-%m-%d")),
+          as.Date(format(date, "1999-%m-%d")) # TODO fix this later
+        )
+      ) |>
+      dplyr::select(-water_year, -site_name) |>
+      dplyr::arrange(date)
+  } else {
+    data |>
+      dplyr::select(date, site_name, value = all_of(col)) |>
+      tidyr::pivot_wider(
+        names_from = "site_name",
+        values_from = "value",
+        values_fn = mean
+      ) |>
+      dplyr::arrange(date)
+  }
+}

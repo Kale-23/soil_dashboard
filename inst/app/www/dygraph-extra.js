@@ -469,6 +469,7 @@
 
         // Allow downloading of registered dygraphs as a PNG
         Dygraph.Export.DownloadByID = function (id, usetitle) {
+            console.log("Downloading dygraph(s): " + id);
             var isArray = function (obj) { return Object.prototype.toString.call(obj) === "[object Array]"; };
             var getPNG = function (dygraph) {
                 // If usetitle is true, then get the title from the dygraph
