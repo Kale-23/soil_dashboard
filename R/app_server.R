@@ -1,3 +1,7 @@
+common <- "~/Desktop/Soil_Work/cleaned_data/"
+frost <- reactive_data_connection(paste0(common, "frost_final_data.csv"))
+pits <- reactive_data_connection(paste0(common, "pits_final_data.csv"))
+
 #' @title Application Server
 #' @description The application server-side
 #'

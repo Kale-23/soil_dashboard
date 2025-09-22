@@ -14,8 +14,8 @@ dygraph_setup <- function(data, column_name, seasonal = FALSE) {
     dplyr::filter(!is.na(date)) |>
     dplyr::select(-date)
   df_xts <- xts::xts(dy_data, order.by = df_index)
-  #TODO: this doesn't work for some reason and it is taking too long to figure out
-  #js_dygraph_format_label <- "function(x) {return 'howdy'}"
+
+  labels_div_id <- paste0("labels_", column_name) # unique ID for legend div
   if (seasonal) {
     dygraphs::dygraph(df_xts, group = "dygraph") |>
       dygraphs::dyAxis("y", label = new_col_name) |>
@@ -25,7 +25,11 @@ dygraph_setup <- function(data, column_name, seasonal = FALSE) {
       #  valueFormatter = htmlwidgets::JS(js_dygraph_format_label)
       #) |>
       dygraphs::dyRangeSelector(height = 20) |>
-      dygraphs::dyLegend(width = 500) |>
+      dygraphs::dyLegend(
+        width = 500,
+        labelsDiv = labels_div_id,
+        labelsSeparateLines = TRUE
+      ) |>
       dygraphs::dyOptions(
         connectSeparatedPoints = TRUE,
         drawPoints = TRUE,
@@ -37,7 +41,11 @@ dygraph_setup <- function(data, column_name, seasonal = FALSE) {
     dygraphs::dygraph(df_xts, group = "dygraph") |>
       dygraphs::dyAxis("y", label = new_col_name) |>
       dygraphs::dyRangeSelector(height = 20) |>
-      dygraphs::dyLegend(width = 500) |>
+      dygraphs::dyLegend(
+        width = 500,
+        labelsDiv = labels_div_id,
+        labelsSeparateLines = TRUE
+      ) |>
       dygraphs::dyOptions(
         connectSeparatedPoints = TRUE,
         drawPoints = TRUE,

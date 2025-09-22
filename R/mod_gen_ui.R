@@ -150,22 +150,38 @@ mod_gen_server <- function(id, data, global_filters) {
 
       tagList(
         lapply(dygraph_data(), function(df_col) {
-          plot_id <- paste0("dygraph_", df_col$col)
-          seasonal <- "site_year" %in% colnames(df_col$df)
+          col <- df_col$col
+          df <- df_col$df
+          seasonal <- "site_year" %in% colnames(df)
+          plot_id <- paste0("dygraph_", col) # unique ID for each plot
+          labels_div_id <- paste0("labels_", df_col$col) # unique ID for legend div
 
+          # create dygraph output for each selected column
           output[[paste0("dygraph_", col)]] <- dygraphs::renderDygraph({
             dygraph_setup(df, col, seasonal)
           })
 
-          shiny::tags$script(
-            glue::glue("console.log('Rendering plot with ID: {plot_id}');")
-          )
-
           div(
             class = "dygraph-plot-container",
             bslib::card(
-              title = col_names_conversions()[[df_col$col]],
-              dygraphs::dygraphOutput(ns(plot_id)),
+              full_screen = TRUE, # can expand to fit screen
+              title = col_names_conversions()[[col]],
+              shiny::fluidRow(
+                shiny::column(
+                  10,
+                  dygraphs::dygraphOutput(ns(plot_id))
+                ),
+                shiny::column(
+                  2,
+                  div(
+                    # div holds legend info
+                    style = "
+                    font-size: 0.5em;
+                    ",
+                    id = labels_div_id,
+                  )
+                )
+              ),
               dyDownload(
                 id = ns(plot_id),
                 label = paste0("Download Plot"),
