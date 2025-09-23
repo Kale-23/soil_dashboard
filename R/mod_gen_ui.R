@@ -131,7 +131,7 @@ mod_gen_server <- function(id, data, global_filters) {
     )
 
     # dynamically creates dygraph data based on selected columns
-    dygraph_data <- shiny::reactive({
+    plot_data <- shiny::reactive({
       req(filtered_data())
       req(input$selected_cols)
       req(global_filters$date_type())
@@ -139,56 +139,65 @@ mod_gen_server <- function(id, data, global_filters) {
       date_type <- global_filters$date_type()
 
       purrr::map(input$selected_cols, function(col) {
-        df <- prepare_dygraph_data(filtered_data(), col, date_type)
+        df <- prepare_plot_data(filtered_data(), col, date_type)
         list(df = df, col = col)
       })
     })
 
     # dynamically creates ns info for each dygraph
     output$all_plots <- shiny::renderUI({
-      req(dygraph_data())
+      req(plot_data())
 
       tagList(
-        lapply(dygraph_data(), function(df_col) {
+        lapply(plot_data(), function(df_col) {
           col <- df_col$col
           df <- df_col$df
           seasonal <- "site_year" %in% colnames(df)
-          plot_id <- paste0("dygraph_", col) # unique ID for each plot
+          plot_id <- paste0("plot_", col) # unique ID for each plot
           labels_div_id <- paste0("labels_", df_col$col) # unique ID for legend div
 
-          # create dygraph output for each selected column
-          output[[paste0("dygraph_", col)]] <- dygraphs::renderDygraph({
-            dygraph_setup(df, col, seasonal)
+          # NOTE: dygraph was replaced with plotly
+          #output[[paste0("dygraph_", col)]] <- dygraphs::renderDygraph({
+          #  dygraph_setup(df, col, seasonal)
+          #})
+          output[[plot_id]] <- plotly::renderPlotly({
+            plotly_timeseries(df, col, seasonal)
           })
 
           div(
-            class = "dygraph-plot-container",
+            class = "plot-container",
             bslib::card(
               full_screen = TRUE, # can expand to fit screen
-              title = col_names_conversions()[[col]],
-              shiny::fluidRow(
-                shiny::column(
-                  10,
-                  dygraphs::dygraphOutput(ns(plot_id))
-                ),
-                shiny::column(
-                  2,
-                  div(
-                    # div holds legend info
-                    style = "
-                    font-size: 0.5em;
-                    ",
-                    id = labels_div_id,
-                  )
-                )
+              bslib::card_header(
+                col_names_conversions()[[col]]
               ),
-              dyDownload(
-                id = ns(plot_id),
-                label = paste0("Download Plot"),
-                usetitle = FALSE,
-                asbutton = TRUE
-              )
-            )
+
+              # NOTE: dygraph was replaced with plotly so most of the formatting is not needed
+              #shiny::fluidRow(
+              #shiny::column(
+              #10,
+              #dygraphs::dygraphOutput(ns(plot_id))
+              plotly::plotlyOutput(ns(plot_id))
+              #),
+              #shiny::column(
+              #  2,
+              #  div(
+              #    # div holds legend info
+              #    style = "
+              #    font-size: 0.5em;
+              #    ",
+              #    id = labels_div_id,
+              #  )
+              #)
+            ),
+            # NOTE: dygraph was replaced with plotly
+            #dyDownload(
+            #  id = ns(plot_id),
+            #  label = paste0("Download Plot"),
+            #  usetitle = FALSE,
+            #  asbutton = TRUE
+            #)
+            #)
           )
         })
       )
