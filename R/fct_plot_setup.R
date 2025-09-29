@@ -3,7 +3,7 @@
 #' @description sets up shiny output for plotly
 #'
 #' @noRd
-plotly_timeseries <- function(df, new_col_name, seasonal = FALSE) {
+plotly_timeseries <- function(df, new_col_name, seasonal) {
   # Extract palette
   colors <- as.character(paletteer::paletteer_d("yarrr::info2"))
 
@@ -29,15 +29,11 @@ plotly_timeseries <- function(df, new_col_name, seasonal = FALSE) {
     text = ~ paste(
       "Location: ", series, "<br>",
       "Value: ", value
-    )
+    ),
+    connectgaps = TRUE # mainly helps with seasonal data
   ) |>
     plotly::layout(
-      yaxis = list(title = col_names_conversions()[[new_col_name]]),
-      xaxis = list(
-        title = "Date",
-        type = 'date',
-        tickformat = "%d %B<br>%Y"
-      )
+      yaxis = list(title = col_names_conversions()[[new_col_name]])
     )
 
   # remove year if seasonal
@@ -47,13 +43,17 @@ plotly_timeseries <- function(df, new_col_name, seasonal = FALSE) {
         xaxis = list(
           title = "Date",
           type = 'date',
-          tickformat = "%d %B<br>%Y"
+          tickformat = "%d %B"
         )
       )
   } else {
     p <- p |>
       plotly::layout(
-        xaxis = list(title = "Date")
+        xaxis = list(
+          title = "Date",
+          type = 'date',
+          tickformat = "%d %B<br>%Y"
+        )
       )
   }
 

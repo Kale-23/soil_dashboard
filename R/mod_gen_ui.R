@@ -152,7 +152,7 @@ mod_gen_server <- function(id, data, global_filters) {
         lapply(plot_data(), function(df_col) {
           col <- df_col$col
           df <- df_col$df
-          seasonal <- "site_year" %in% colnames(df)
+          seasonal <- global_filters$date_type() == "Seasonal"
           plot_id <- paste0("plot_", col) # unique ID for each plot
           labels_div_id <- paste0("labels_", df_col$col) # unique ID for legend div
 
