@@ -6,7 +6,7 @@
 #'
 #' @return reactive data that updates when the file changes
 #' @noRd
-reactive_data_connection <- function(csv_file_path) {
+reactive_data_connection <- function(session, csv_file_path) {
   refresh_interval <- 60000 # check every minute for an update
   print(paste0(
     "checking for updates to ",
@@ -22,5 +22,23 @@ reactive_data_connection <- function(csv_file_path) {
     NULL,
     csv_file_path,
     readFunc = readr::read_csv
+  )
+}
+
+reactive_poll_connection <- function(session, global_filters, csv_file_path) {
+  refresh_interval <- 1000 # in milliseconds
+
+  shiny::reactivePoll(
+    intervalMillis = refresh_interval,
+    session = session,
+    # Check function: returns the last known update timestamp
+    checkFunc = function() {
+      # rechecks file whenever the update button is clicked
+      global_filters$last_updated()
+    },
+    # reads csv when checkFunc reports a change
+    valueFunc = function() {
+      readr::read_csv(csv_file_path, show_col_types = FALSE)
+    }
   )
 }

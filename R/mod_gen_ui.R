@@ -58,7 +58,7 @@ mod_gen_ui <- function(id) {
 #' General Server Functions
 #'
 #' @noRd
-mod_gen_server <- function(id, data, global_filters) {
+mod_gen_server <- function(id, data, global_filters, test_data) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
@@ -107,18 +107,21 @@ mod_gen_server <- function(id, data, global_filters) {
 
     # output data table at bottom
     output$dt_table <- DT::renderDataTable({
-      req(filtered_data())
-      req(input$selected_cols)
-
-      # filter data based on selected columns
-      df <- filtered_data() |>
-        dplyr::select(
-          !dplyr::where(is.numeric) & !dplyr::where(is.logical),
-          dplyr::all_of(input$selected_cols)
-        )
-
-      # render datatable
+      req(test_data())
+      df <- test_data()
       DT::datatable(df)
+      #req(filtered_data())
+      #req(input$selected_cols)
+
+      ## filter data based on selected columns
+      #df <- filtered_data() |>
+      #  dplyr::select(
+      #    !dplyr::where(is.numeric) & !dplyr::where(is.logical),
+      #    dplyr::all_of(input$selected_cols)
+      #  )
+
+      ## render datatable
+      #DT::datatable(df)
     })
 
     # handles download button for the filtered dataset

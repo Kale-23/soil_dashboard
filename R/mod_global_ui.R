@@ -16,7 +16,12 @@ mod_global_ui <- function(id, tot_height) {
       bslib::layout_columns(
         shiny::uiOutput(ns("loc_selector")),
         shiny::uiOutput(ns("date_type_selector")),
-        shiny::uiOutput(ns("date_range_selector"))
+        shiny::uiOutput(ns("date_range_selector")),
+        shiny::div(
+          shiny::actionButton(ns("update_sheets"), "Update Data"),
+          shiny::br(),
+          shiny::textOutput(ns("update_sheets_time"), inline = TRUE)
+        ),
       )
     )
   )
@@ -67,12 +72,24 @@ mod_global_server <- function(id, frost, pits) {
       )
     })
 
+    last_updated <- reactiveVal(Sys.time())
+
+    # Update when button is clicked
+    observeEvent(input$update_sheets, {
+      last_updated(Sys.time())
+    })
+
+    output$update_sheets_time <- renderText({
+      paste0(" Last Updated: ", format(last_updated(), "%Y-%m-%d %H:%M:%S"))
+    })
+
     # return reactive filters
     return(
       list(
         location = shiny::reactive(input$location),
         date_type = shiny::reactive(input$date_type),
-        date_range = shiny::reactive(input$date_range)
+        date_range = shiny::reactive(input$date_range),
+        last_updated = last_updated
       )
     )
   })
