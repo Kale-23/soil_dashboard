@@ -7,13 +7,39 @@ plotly_timeseries <- function(df, new_col_name, seasonal) {
   # Extract palette
   colors <- as.character(paletteer::paletteer_d("yarrr::info2"))
 
+  # This adds a random date in June each year
+  # if connect gaps is FALSE, it will break the lines at these dates making
+  # it look better
+  if (!seasonal) {
+    # gets the min/max year in the data
+    min_year <- lubridate::year(min(df$date))
+    max_year <- lubridate::year(max(df$date))
+    # creates a sequence of dates in June for each year
+    june_dates <- seq(
+      as.Date(paste0(min_year, "-06-01")),
+      as.Date(paste0(max_year, "-06-01")),
+      by = "1 year"
+    )
+
+    # create a data frame with NA values for each series at each June date
+    na_rows <- df[0, ]
+    na_rows <- na_rows[rep(1, length(june_dates)), ]
+    na_rows[,] <- NA
+    na_rows$date <- june_dates
+
+    # Step 4: Combine and keep unique rows
+    df <- dplyr::bind_rows(df, na_rows) |>
+      dplyr::arrange(date)
+  }
+
   # Convert wide data into long for Plotly
   df_long <- tidyr::pivot_longer(
     df,
     cols = -date,
     names_to = "series",
     values_to = "value"
-  )
+  ) |>
+    dplyr::arrange(date)
 
   # Build the plot
   p <- plotly::plot_ly(
@@ -30,7 +56,7 @@ plotly_timeseries <- function(df, new_col_name, seasonal) {
       "Location: ", series, "<br>",
       "Value: ", value
     ),
-    connectgaps = TRUE # mainly helps with seasonal data
+    connectgaps = ifelse(seasonal, TRUE, FALSE)
   ) |>
     plotly::layout(
       yaxis = list(title = col_names_conversions()[[new_col_name]])
@@ -92,56 +118,3 @@ prepare_plot_data <- function(data, col, date_type) {
       dplyr::arrange(date)
   }
 }
-
-# NOTE: dygraph was replaced with plotly so this function is not needed
-#dygraph_setup <- function(data, column_name, seasonal = FALSE) {
-#  df_index <- as.Date(data$date)
-#  df_index <- df_index[!is.na(df_index)]
-#  new_col_name <- col_names_conversions()[[column_name]]
-#  dy_data <- data |>
-#    dplyr::filter(!is.na(date)) |>
-#    dplyr::select(-date)
-#  df_xts <- xts::xts(dy_data, order.by = df_index)
-#
-#  labels_div_id <- paste0("labels_", column_name) # unique ID for legend div
-#  if (seasonal) {
-#    dygraphs::dygraph(df_xts, group = "dygraph") |>
-#      dygraphs::dyAxis("y", label = new_col_name) |>
-#      #dygraphs::dyAxis(
-#      #  "x",
-#      #  axisLabelFormatter = htmlwidgets::JS(js_dygraph_format_label),
-#      #  valueFormatter = htmlwidgets::JS(js_dygraph_format_label)
-#      #) |>
-#      dygraphs::dyRangeSelector(height = 20) |>
-#      dygraphs::dyLegend(
-#        width = 500,
-#        labelsDiv = labels_div_id,
-#        labelsSeparateLines = TRUE
-#      ) |>
-#      dygraphs::dyOptions(
-#        connectSeparatedPoints = TRUE,
-#        drawPoints = TRUE,
-#        pointSize = 2,
-#        colors = paletteer::paletteer_d("yarrr::info2")
-#      ) |>
-#      dygraphs::dyCallbacks(drawCallback = dyRegister())
-#  } else {
-#    dygraphs::dygraph(df_xts, group = "dygraph") |>
-#      dygraphs::dyAxis("y", label = new_col_name) |>
-#      dygraphs::dyRangeSelector(height = 20) |>
-#      dygraphs::dyLegend(
-#        width = 500,
-#        labelsDiv = labels_div_id,
-#        labelsSeparateLines = TRUE
-#      ) |>
-#      dygraphs::dyOptions(
-#        connectSeparatedPoints = TRUE,
-#        drawPoints = TRUE,
-#        pointSize = 2,
-#        colors = paletteer::paletteer_d(
-#          "yarrr::info2",
-#        )
-#      ) |>
-#      dygraphs::dyCallbacks(drawCallback = dyRegister())
-#  }
-#}

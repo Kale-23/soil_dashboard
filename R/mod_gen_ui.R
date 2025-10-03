@@ -29,7 +29,6 @@ mod_gen_ui <- function(id) {
       sidebar = bslib::sidebar(
         width = 350,
         shiny::uiOutput(ns("col_selector")),
-        #shiny::uiOutput(ns("dy_downloads")),
         shiny::downloadButton(outputId = ns("download_data"), "Download Filtered Data")
       ),
       shiny::tagList(
@@ -110,18 +109,6 @@ mod_gen_server <- function(id, data, global_filters, test_data) {
       req(test_data())
       df <- test_data()
       DT::datatable(df)
-      #req(filtered_data())
-      #req(input$selected_cols)
-
-      ## filter data based on selected columns
-      #df <- filtered_data() |>
-      #  dplyr::select(
-      #    !dplyr::where(is.numeric) & !dplyr::where(is.logical),
-      #    dplyr::all_of(input$selected_cols)
-      #  )
-
-      ## render datatable
-      #DT::datatable(df)
     })
 
     # handles download button for the filtered dataset
@@ -157,12 +144,6 @@ mod_gen_server <- function(id, data, global_filters, test_data) {
           df <- df_col$df
           seasonal <- global_filters$date_type() == "Seasonal"
           plot_id <- paste0("plot_", col) # unique ID for each plot
-          labels_div_id <- paste0("labels_", df_col$col) # unique ID for legend div
-
-          # NOTE: dygraph was replaced with plotly
-          #output[[paste0("dygraph_", col)]] <- dygraphs::renderDygraph({
-          #  dygraph_setup(df, col, seasonal)
-          #})
           output[[plot_id]] <- plotly::renderPlotly({
             plotly_timeseries(df, col, seasonal)
           })
@@ -174,33 +155,8 @@ mod_gen_server <- function(id, data, global_filters, test_data) {
               bslib::card_header(
                 col_names_conversions()[[col]]
               ),
-
-              # NOTE: dygraph was replaced with plotly so most of the formatting is not needed
-              #shiny::fluidRow(
-              #shiny::column(
-              #10,
-              #dygraphs::dygraphOutput(ns(plot_id))
-              plotly::plotlyOutput(ns(plot_id))
-              #),
-              #shiny::column(
-              #  2,
-              #  div(
-              #    # div holds legend info
-              #    style = "
-              #    font-size: 0.5em;
-              #    ",
-              #    id = labels_div_id,
-              #  )
-              #)
+              plotly::plotlyOutput(ns(plot_id)) # actual plot output
             ),
-            # NOTE: dygraph was replaced with plotly
-            #dyDownload(
-            #  id = ns(plot_id),
-            #  label = paste0("Download Plot"),
-            #  usetitle = FALSE,
-            #  asbutton = TRUE
-            #)
-            #)
           )
         })
       )

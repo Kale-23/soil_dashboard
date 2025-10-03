@@ -19,13 +19,15 @@ app_ui <- function(request) {
     tags$style(HTML("html, body { height: 100%; margin: 0; }")),
 
     bslib::page_fluid(
+      # reduces stupid ammount of space between bslib elements
+      theme = bs_theme("bslib_spacer" = "0.25rem"),
       # main layout container
       div(
         style = "
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      ",
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        ",
 
         bslib::card(
           height = "8vh",
