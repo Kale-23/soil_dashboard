@@ -52,7 +52,7 @@ plotly_timeseries <- function(df, new_col_name, seasonal) {
     mode = "lines+markers",
     marker = list(size = 6),
     #fmt: skip
-    text = ~ paste(
+    text = ~ paste0(
       "Location: ", series, "<br>",
       "Value: ", value
     ),
