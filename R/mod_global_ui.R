@@ -12,7 +12,13 @@ mod_global_ui <- function(id, tot_height) {
   tagList(
     bslib::card(
       height = tot_height,
-      bslib::card_header("Global Filters"),
+      bslib::card_header(shiny::span(
+        "Global Filters",
+        bslib::tooltip(
+          bsicons::bs_icon("info-circle"),
+          "These filters apply to both datasets and all plots and tables in the dashboard."
+        )
+      )),
       bslib::layout_columns(
         shiny::uiOutput(ns("loc_selector")),
         shiny::uiOutput(ns("date_type_selector")),
@@ -41,7 +47,13 @@ mod_global_server <- function(id, frost, pits) {
       all_locs_names <- col_names_conversions()[all_locs]
       shiny::checkboxGroupInput(
         inputId = ns("location"),
-        label = "Select Monitoring Locations",
+        label = shiny::span(
+          "Select Monitoring Locations",
+          bslib::tooltip(
+            bsicons::bs_icon("info-circle"),
+            "Select one or more monitoring locations to visualize."
+          )
+        ),
         choiceNames = unname(all_locs_names),
         choiceValues = all_locs,
         selected = all_locs
@@ -50,7 +62,13 @@ mod_global_server <- function(id, frost, pits) {
     output$date_type_selector <- shiny::renderUI({
       shiny::radioButtons(
         inputId = ns("date_type"),
-        label = "Time Series Scope",
+        label = shiny::span(
+          "Time Series Scope",
+          bslib::tooltip(
+            bsicons::bs_icon("info-circle"),
+            "Chose between viewing the dataset in full (Full Dataset), or viewing all seasons aligned against one another (Seasonal)"
+          )
+        ),
         choices = c("Full Dataset", "Seasonal"),
         selected = "Full Dataset"
       )
@@ -64,7 +82,13 @@ mod_global_server <- function(id, frost, pits) {
       max_date <- max(max_frost, max_pits)
       shiny::dateRangeInput(
         inputId = ns("date_range"),
-        label = "Select Date Range",
+        label = shiny::span(
+          "Select Date Range",
+          bslib::tooltip(
+            bsicons::bs_icon("info-circle"),
+            "Select a date range within the full extent of the datasets."
+          )
+        ),
         start = min_date,
         end = max_date,
         min = min_date,

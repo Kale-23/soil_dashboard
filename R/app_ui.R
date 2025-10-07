@@ -48,6 +48,7 @@ app_ui <- function(request) {
 
               # source code link
               shiny::div(
+                style = "display: flex; align-items: center; gap: 0.6em;",
                 # Source code link
                 shiny::a(
                   href = "https://github.com/Kale-23/soil_dashboard.git", # <-- update this link
@@ -57,10 +58,10 @@ app_ui <- function(request) {
                     "View source code on GitHub"
                   )
                 ),
-              ),
 
-              # theme toggle
-              bslib::input_dark_mode()
+                # theme toggle
+                bslib::input_dark_mode()
+              ),
             )
           ),
           #TODO fix this
