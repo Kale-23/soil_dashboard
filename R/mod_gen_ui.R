@@ -6,7 +6,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_gen_ui <- function(id) {
+mod_gen_ui <- function(id, tot_height) {
   ns <- NS(id)
 
   tagList(
@@ -26,6 +26,7 @@ mod_gen_ui <- function(id) {
     )),
 
     bslib::layout_sidebar(
+      height = tot_height,
       sidebar = bslib::sidebar(
         width = 350,
         shiny::uiOutput(ns("col_selector")),
@@ -57,7 +58,7 @@ mod_gen_ui <- function(id) {
 #' General Server Functions
 #'
 #' @noRd
-mod_gen_server <- function(id, data, global_filters, test_data) {
+mod_gen_server <- function(id, data, global_filters) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
@@ -70,7 +71,8 @@ mod_gen_server <- function(id, data, global_filters, test_data) {
       # filter out site names to global selection
       d_loc <- global_filters$location()
       if (!is.null(d_loc)) {
-        df <- df[df$site_name %in% d_loc, ]
+        df <- df |>
+          select(matches(paste(d_loc, collapse = "|")))
       }
 
       # filter down dates to global selection

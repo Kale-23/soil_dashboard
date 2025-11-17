@@ -12,6 +12,11 @@ non_dygraph_numeric_cols <- function() {
 
 col_names_conversions <- function() {
   c(
+    # new headers
+    "field" = "Thompson Field",
+    "canopy" = "Thompson Canopy",
+
+    # old headers
     "kingman" = "Kingman",
     "thompson canopy" = "Thompson Canopy",
     "thompson field" = "Thompson Field",

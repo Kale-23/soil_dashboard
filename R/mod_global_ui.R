@@ -36,15 +36,15 @@ mod_global_ui <- function(id, tot_height) {
 #' global_ui Server Functions
 #'
 #' @noRd
-mod_global_server <- function(id, frost, pits) {
+mod_global_server <- function(id, full_dataset) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
     output$loc_selector <- shiny::renderUI({
-      frost_locs <- unique(frost()$site_name)
-      pits_locs <- unique(pits()$site_name)
-      all_locs <- unique(c(frost_locs, pits_locs))
+      all_locs <- c("field", "canopy") # this used to be dynamic, but now we only have these two locations
       all_locs_names <- col_names_conversions()[all_locs]
+
+      # location selector
       shiny::checkboxGroupInput(
         inputId = ns("location"),
         label = shiny::span(
@@ -59,6 +59,7 @@ mod_global_server <- function(id, frost, pits) {
         selected = all_locs
       )
     })
+    # date format (seasonal vs full)
     output$date_type_selector <- shiny::renderUI({
       shiny::radioButtons(
         inputId = ns("date_type"),
@@ -73,13 +74,10 @@ mod_global_server <- function(id, frost, pits) {
         selected = "Full Dataset"
       )
     })
+    # date range selector
     output$date_range_selector <- shiny::renderUI({
-      min_frost <- min(frost()$date, na.rm = TRUE)
-      max_frost <- max(frost()$date, na.rm = TRUE)
-      min_pits <- min(pits()$date, na.rm = TRUE)
-      max_pits <- max(pits()$date, na.rm = TRUE)
-      min_date <- min(min_frost, min_pits)
-      max_date <- max(max_frost, max_pits)
+      min_date <- min(full_dataset$date)
+      max_date <- max(full_dataset$date)
       shiny::dateRangeInput(
         inputId = ns("date_range"),
         label = shiny::span(
@@ -96,9 +94,8 @@ mod_global_server <- function(id, frost, pits) {
       )
     })
 
-    last_updated <- reactiveVal(Sys.time())
-
     # Update when button is clicked
+    last_updated <- reactiveVal(Sys.time())
     observeEvent(input$update_sheets, {
       last_updated(Sys.time())
     })
