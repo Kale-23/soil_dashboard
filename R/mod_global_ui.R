@@ -41,6 +41,7 @@ mod_global_server <- function(id, full_dataset) {
     ns <- session$ns
 
     output$loc_selector <- shiny::renderUI({
+      req(full_dataset())
       all_locs <- c("field", "canopy") # this used to be dynamic, but now we only have these two locations
       all_locs_names <- col_names_conversions()[all_locs]
 
@@ -61,6 +62,7 @@ mod_global_server <- function(id, full_dataset) {
     })
     # date format (seasonal vs full)
     output$date_type_selector <- shiny::renderUI({
+      req(full_dataset())
       shiny::radioButtons(
         inputId = ns("date_type"),
         label = shiny::span(
@@ -76,8 +78,10 @@ mod_global_server <- function(id, full_dataset) {
     })
     # date range selector
     output$date_range_selector <- shiny::renderUI({
-      min_date <- min(full_dataset$date)
-      max_date <- max(full_dataset$date)
+      req(full_dataset())
+      df <- full_dataset()
+      min_date <- min(df$date)
+      max_date <- max(df$date)
       shiny::dateRangeInput(
         inputId = ns("date_range"),
         label = shiny::span(
@@ -90,7 +94,7 @@ mod_global_server <- function(id, full_dataset) {
         start = min_date,
         end = max_date,
         min = min_date,
-        max = max_date,
+        max = max_date
       )
     })
 

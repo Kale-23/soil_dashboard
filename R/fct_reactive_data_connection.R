@@ -25,7 +25,7 @@ reactive_data_connection <- function(session, csv_file_path) {
   )
 }
 
-reactive_poll_connection <- function(session, global_filters, csv_file_path) {
+reactive_poll_connection <- function(session, last_updated_func, csv_file_path) {
   refresh_interval <- 1000 # in milliseconds
 
   shiny::reactivePoll(
@@ -33,12 +33,38 @@ reactive_poll_connection <- function(session, global_filters, csv_file_path) {
     session = session,
     # Check function: returns the last known update timestamp
     checkFunc = function() {
-      # rechecks file whenever the update button is clicked
-      global_filters$last_updated()
+      last_updated_func()
     },
     # reads csv when checkFunc reports a change
     valueFunc = function() {
-      readr::read_csv(csv_file_path, show_col_types = FALSE)
+      data <- readr::read_csv(
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVrMGhklEZl3pTLkxNieIO94BCYsWT9EEkLaO2iyD1CYBkmX_A3zIMpdrLEnJsydrC7oH1nDDEuL8j/pub?gid=0&single=true&output=csv"
+      ) |>
+        dplyr::select(
+          -c(form_response_time, sampler_email, sampler_initials),
+          -dplyr::contains(c("notes", "weight", "radiation")),
+        ) |>
+        dplyr::mutate(
+          sampling_date = lubridate::mdy(sampling_date),
+        ) |>
+        dplyr::rename(date = sampling_date) |>
+        dplyr::filter(!dplyr::if_all(everything(), is.na))
+
+      data <- data[seq_len(nrow(data) - 3), ]
+
+      data_field <- data |>
+        dplyr::select(dplyr::contains("field")) |>
+        dplyr::filter(!dplyr::if_all(everything(), is.na)) |>
+        dplyr::rename_with(~ stringr::str_replace_all(., "field_", "")) |>
+        dplyr::mutate(location = "field")
+
+      data_canopy <- data |>
+        dplyr::select(dplyr::contains("canopy")) |>
+        dplyr::filter(!dplyr::if_all(everything(), is.na)) |>
+        dplyr::rename_with(~ stringr::str_replace_all(., "canopy_", "")) |>
+        dplyr::mutate(location = "canopy")
+
+      return(dplyr::bind_rows(data_field, data_canopy))
     }
   )
 }

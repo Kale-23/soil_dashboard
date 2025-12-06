@@ -69,13 +69,15 @@ mod_gen_server <- function(id, data, global_filters) {
       df <- data()
 
       # filter out site names to global selection
+      req(global_filters$location())
       d_loc <- global_filters$location()
       if (!is.null(d_loc)) {
         df <- df |>
-          select(matches(paste(d_loc, collapse = "|")))
+          dplyr::select(matches(paste(d_loc, collapse = "|")))
       }
 
       # filter down dates to global selection
+      req(global_filters$date_range())
       d_range <- global_filters$date_range()
       if (!is.null(d_range)) {
         df <- df[df$date >= d_range[1] & df$date <= d_range[2], ]
@@ -92,10 +94,10 @@ mod_gen_server <- function(id, data, global_filters) {
 
       df <- data() |>
         dplyr::select(dplyr::where(is.numeric)) |>
-        dplyr::select(-dplyr::any_of(non_dygraph_numeric_cols()))
+        dplyr::select(-dplyr::any_of(non_dygraph_numeric_cols())) #TODO: update these
 
-      cols <- colnames(df)[-1] # exclude the first column (date)
-      col_names <- col_names_conversions()[cols]
+      cols <- colnames(df) # exclude the first column (date)
+      col_names <- cols #col_names_conversions()[cols]
 
       shiny::checkboxGroupInput(
         inputId = ns("selected_cols"),
