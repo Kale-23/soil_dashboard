@@ -64,23 +64,9 @@ app_ui <- function(request) {
               ),
             )
           ),
-          #TODO fix this
           mod_global_ui("global_1", tot_height = "20vh"),
 
-          mod_gen_ui("full_1", tot_height = "80vh"),
-
-          #bslib::navset_card_pill(
-          #  height = "80vh",
-          #  placement = "above",
-          #  bslib::nav_panel(
-          #    title = "Frost",
-          #    mod_gen_ui("frost_1") # from mod_frost.R
-          #  ),
-          #  bslib::nav_panel(
-          #    title = "Pits",
-          #    mod_gen_ui("pits_1") # from mod_pits.R
-          #  )
-          #)
+          mod_gen_ui("full_1", tot_height = "75vh"),
         )
         #footer,
       )

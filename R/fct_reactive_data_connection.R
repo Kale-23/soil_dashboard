@@ -44,27 +44,76 @@ reactive_poll_connection <- function(session, last_updated_func, csv_file_path) 
           -c(form_response_time, sampler_email, sampler_initials),
           -dplyr::contains(c("notes", "weight", "radiation")),
         ) |>
-        dplyr::mutate(
-          sampling_date = lubridate::mdy(sampling_date),
-        ) |>
+        dplyr::mutate(sampling_date = lubridate::mdy(sampling_date), ) |>
         dplyr::rename(date = sampling_date) |>
         dplyr::filter(!dplyr::if_all(everything(), is.na))
 
       data <- data[seq_len(nrow(data) - 3), ]
 
       data_field <- data |>
-        dplyr::select(dplyr::contains("field")) |>
+        dplyr::select(dplyr::contains("field"), date) |>
         dplyr::filter(!dplyr::if_all(everything(), is.na)) |>
+        dplyr::mutate(
+          avg_snow_depth = rowMeans(
+            dplyr::across(dplyr::contains("snow_depth")),
+            na.rm = TRUE
+          ),
+          avg_shallow_frost_depth = rowMeans(
+            dplyr::across(dplyr::contains("shallow_frost_depth")),
+            na.rm = TRUE
+          ),
+          avg_max_frost_depth = rowMeans(
+            dplyr::across(dplyr::contains("max_frost_depth")),
+            na.rm = TRUE
+          ),
+          avg_thaw_depth = rowMeans(
+            dplyr::across(dplyr::contains("thaw_depth")),
+            na.rm = TRUE
+          )
+        ) |>
         dplyr::rename_with(~ stringr::str_replace_all(., "field_", "")) |>
-        dplyr::mutate(location = "field")
+        dplyr::mutate(site_name = "field")
 
       data_canopy <- data |>
-        dplyr::select(dplyr::contains("canopy")) |>
+        dplyr::select(dplyr::contains("canopy"), date) |>
         dplyr::filter(!dplyr::if_all(everything(), is.na)) |>
+        dplyr::mutate(
+          avg_snow_depth = rowMeans(
+            dplyr::across(dplyr::contains("snow_depth")),
+            na.rm = TRUE
+          ),
+          avg_shallow_frost_depth = rowMeans(
+            dplyr::across(dplyr::contains("shallow_frost_depth")),
+            na.rm = TRUE
+          ),
+          avg_max_frost_depth = rowMeans(
+            dplyr::across(dplyr::contains("max_frost_depth")),
+            na.rm = TRUE
+          ),
+          avg_thaw_depth = rowMeans(
+            dplyr::across(dplyr::contains("thaw_depth")),
+            na.rm = TRUE
+          )
+        ) |>
         dplyr::rename_with(~ stringr::str_replace_all(., "canopy_", "")) |>
-        dplyr::mutate(location = "canopy")
+        dplyr::mutate(site_name = "canopy")
 
-      return(dplyr::bind_rows(data_field, data_canopy))
+      combined <- dplyr::bind_rows(data_field, data_canopy) |>
+        dplyr::select(!dplyr::contains("tube")) |>
+        dplyr::arrange(
+          date,
+          site_name,
+          swe,
+          albedo,
+          avg_snow_depth,
+          avg_shallow_frost_depth,
+          avg_max_frost_depth,
+          avg_thaw_depth,
+          surface_temperature_celsius,
+          snow_depth_centimeters
+        )
+
+      return(combined)
     }
   )
 }

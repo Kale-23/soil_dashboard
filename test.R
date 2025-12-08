@@ -14,13 +14,13 @@ thing <- readr::read_csv(
 thing <- thing[seq_len(nrow(thing) - 3), ]
 
 thing_field <- thing |>
-  dplyr::select(dplyr::contains("field")) |>
+  dplyr::select(dplyr::contains("field"), date) |>
   dplyr::filter(!dplyr::if_all(everything(), is.na)) |>
   dplyr::rename_with(~ stringr::str_replace_all(., "field_", "")) |>
   dplyr::mutate(location = "field")
 
 thing_canopy <- thing |>
-  dplyr::select(dplyr::contains("canopy")) |>
+  dplyr::select(dplyr::contains("canopy"), date) |>
   dplyr::filter(!dplyr::if_all(everything(), is.na)) |>
   dplyr::rename_with(~ stringr::str_replace_all(., "canopy_", "")) |>
   dplyr::mutate(location = "canopy")
