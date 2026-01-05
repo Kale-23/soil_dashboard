@@ -5,15 +5,15 @@ output: github_document
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
-  knitr::opts_chunk$set(
-    collapse = TRUE,
-    comment = "#>",
-    fig.path = "man/figures/README-",
-    out.width = "100%"
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
 )
 ```
 
-# `{soildash}`
+# Soil Frost and Snow Pits Dashboard
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
@@ -24,7 +24,7 @@ output: github_document
 You can install the development version of `{soildash}` like so:
 
 ```{r}
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+remotes::install_github("kale-23/soil_dashboard", dependencies = TRUE)
 ```
 
 ## Run
@@ -49,12 +49,4 @@ Here are the tests results and package coverage:
 
 ```{r, error = TRUE}
 devtools::check(quiet = TRUE)
-```
-
-```{r echo = FALSE}
-unloadNamespace("soildash")
-```
-
-```{r, error = TRUE}
-covr::package_coverage()
 ```
