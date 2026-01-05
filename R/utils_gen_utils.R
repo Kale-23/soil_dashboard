@@ -14,8 +14,9 @@ non_dygraph_numeric_cols <- function() {
 col_names_conversions <- function() {
   c(
     # new headers
-    "field" = "Thompson Field",
-    "canopy" = "Thompson Canopy",
+    "pasture" = "Pasture",
+    #"field" = "Pasture",
+    "canopy" = "Canopy",
     "date" = "Date",
     "location" = "Sampling Location",
     "swe" = "Snow Water Equivalent (mm)",
@@ -24,7 +25,7 @@ col_names_conversions <- function() {
     "avg_shallow_frost_depth" = "Average Shallow Frost Depth (cm)",
     "avg_max_frost_depth" = "Average Max Frost Depth (cm)",
     "avg_thaw_depth" = "Average Thaw Depth (cm)",
-    "surface_temperature_celsius" = "Surface Temperature (°C)",
+    "surface_temperature_celsius" = "Surface Temperature (Celsius)",
     "snow_depth_centimeters" = "Snow Depth (cm)"
 
     # old headers

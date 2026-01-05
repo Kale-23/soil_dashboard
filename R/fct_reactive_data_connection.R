@@ -48,10 +48,10 @@ reactive_poll_connection <- function(session, last_updated_func, csv_file_path) 
         dplyr::rename(date = sampling_date) |>
         dplyr::filter(!dplyr::if_all(everything(), is.na))
 
-      data <- data[seq_len(nrow(data) - 3), ]
+      #data <- data[seq_len(nrow(data) - 3), ]
 
-      data_field <- data |>
-        dplyr::select(dplyr::contains("field"), date) |>
+      data_pasture <- data |>
+        dplyr::select(dplyr::contains("pasture"), date) |>
         dplyr::filter(!dplyr::if_all(everything(), is.na)) |>
         dplyr::mutate(
           avg_snow_depth = rowMeans(
@@ -71,8 +71,8 @@ reactive_poll_connection <- function(session, last_updated_func, csv_file_path) 
             na.rm = TRUE
           )
         ) |>
-        dplyr::rename_with(~ stringr::str_replace_all(., "field_", "")) |>
-        dplyr::mutate(site_name = "field")
+        dplyr::rename_with(~ stringr::str_replace_all(., "pasture_", "")) |>
+        dplyr::mutate(site_name = "pasture")
 
       data_canopy <- data |>
         dplyr::select(dplyr::contains("canopy"), date) |>
@@ -98,7 +98,7 @@ reactive_poll_connection <- function(session, last_updated_func, csv_file_path) 
         dplyr::rename_with(~ stringr::str_replace_all(., "canopy_", "")) |>
         dplyr::mutate(site_name = "canopy")
 
-      combined <- dplyr::bind_rows(data_field, data_canopy) |>
+      combined <- dplyr::bind_rows(data_pasture, data_canopy) |>
         dplyr::select(!dplyr::contains("tube")) |>
         dplyr::arrange(
           date,

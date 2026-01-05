@@ -42,7 +42,7 @@ mod_global_server <- function(id, full_dataset) {
 
     output$loc_selector <- shiny::renderUI({
       req(full_dataset())
-      all_locs <- c("field", "canopy") # this used to be dynamic, but now we only have these two locations
+      all_locs <- c("pasture", "canopy") # this used to be dynamic, but now we only have these two locations
       all_locs_names <- col_names_conversions()[all_locs]
 
       # location selector

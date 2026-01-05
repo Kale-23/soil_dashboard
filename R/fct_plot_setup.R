@@ -100,7 +100,7 @@ prepare_plot_data <- function(data, col, date_type) {
           lubridate::year(date)
         )
       ) |>
-      dplyr::mutate(site_year = paste0(site_name, "_", water_year)) |>
+      dplyr::mutate(site_year = paste0(stringr::str_to_title(site_name), " ", water_year)) |>
       tidyr::pivot_wider(
         names_from = "site_year",
         values_from = "value",
@@ -118,6 +118,7 @@ prepare_plot_data <- function(data, col, date_type) {
   } else {
     data |>
       dplyr::select(date, site_name, value = all_of(col)) |>
+      dplyr::mutate(site_name = stringr::str_to_title(site_name)) |>
       tidyr::pivot_wider(
         names_from = "site_name",
         values_from = "value",

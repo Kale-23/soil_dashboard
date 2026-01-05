@@ -12,7 +12,6 @@ run_app <- function(
   options = list(),
   enableBookmarking = NULL,
   uiPattern = "/",
-  #db_path = "~/Desktop/Soil_Work/cleaned_data/",
   ...
 ) {
   with_golem_options(
@@ -24,8 +23,6 @@ run_app <- function(
       enableBookmarking = enableBookmarking,
       uiPattern = uiPattern
     ),
-    golem_opts = list(
-      #db_path = db_path
-    )
+    golem_opts = list()
   )
 }

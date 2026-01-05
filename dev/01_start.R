@@ -21,12 +21,12 @@
 golem::fill_desc(
   pkg_name = "soildash", # The name of the golem package containing the app (typically lowercase, no underscore or periods)
   pkg_title = "SOIL_DASHBOARD", # What the Package Does (One Line, Title Case, No Period)
-  pkg_description = "dashboard presentation of winter soil dataset", # What the package does (one paragraph).
+  pkg_description = "Dashboard presentation of winter soil dataset.", # What the package does (one paragraph).
   authors = person(
-    given = "AUTHOR_FIRST", # Your First Name
-    family = "AUTHOR_LAST", # Your Last Name
-    email = "AUTHOR@MAIL.COM", # Your email
-    role = c("aut", "cre") # Your role (here author/creator)
+    given = "Kaleb", # Your First Name
+    family = "Ducharme", # Your Last Name
+    email = "kaleb.ducharme@unh.edu", # Your email
+    role = c("cre") # Your role (here author/creator)
   ),
   repo_url = "https://github.com/kale-23/soil_dashboard", # The URL of the GitHub repo (optional),
   pkg_version = "1.0", # The version of the package containing the app

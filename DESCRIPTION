@@ -1,20 +1,28 @@
 Package: soildash
 Title: SOIL_DASHBOARD
-Version: 0.0.0.9000
+Version: 1.0
 Authors@R:
-    person("AUTHOR_FIRST", "AUTHOR_LAST", , "AUTHOR@MAIL.COM", role = c("aut", "cre"))
-Description: dashboard presentation of winter soil dataset
+    person("Kaleb", "Ducharme", , "kaleb.ducharme@unh.edu", role = "cre")
+Description: Dashboard presentation of winter soil dataset.
 License: What license is it under?
 URL: https://github.com/kale-23/soil_dashboard
 BugReports: https://github.com/kale-23/soil_dashboard/issues
 Imports:
-    config,
-    golem,
-    logger,
-    shiny,
-    dygraphs,
+    bsicons,
     bslib,
-    pkgload
+    config,
+    dplyr,
+    DT,
+    golem,
+    lubridate,
+    paletteer,
+    plotly,
+    purrr,
+    readr,
+    shiny,
+    stringr,
+    tidyr,
+    yarrr
 Suggests:
     knitr,
     rmarkdown,
@@ -28,7 +36,6 @@ Language: en-US
 LazyData: true
 RoxygenNote: 7.3.3
 Collate:
-    '_disable_autoload.R'
     'app_config.R'
     'fct_reactive_data_connection.R'
     'app_server.R'
