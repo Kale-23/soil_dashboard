@@ -22,7 +22,7 @@ Imports:
     shiny,
     stringr,
     tidyr,
-    yarrr
+    lisa
 Suggests:
     knitr,
     rmarkdown,

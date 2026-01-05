@@ -5,7 +5,7 @@
 #' @noRd
 plotly_timeseries <- function(df, new_col_name, seasonal) {
   # Extract palette
-  colors <- as.character(paletteer::paletteer_d("yarrr::info2"))
+  colors <- as.character(paletteer::paletteer_d("lisa::FridaKahlo"))
 
   # This adds a random date in June each year
   # if connect gaps is FALSE, it will break the lines at these dates making
