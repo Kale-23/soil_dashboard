@@ -56,8 +56,8 @@ golem::add_shinyserver_file()
 # Documentation
 
 ## Vignette ----
-usethis::use_vignette("soildash")
-devtools::build_vignettes()
+#usethis::use_vignette("soildash")
+#devtools::build_vignettes()
 
 ## Code Coverage----
 ## Set the code coverage service ("codecov" or "coveralls")
