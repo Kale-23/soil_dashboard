@@ -38,7 +38,8 @@ reactive_poll_connection <- function(session, last_updated_func, csv_file_path) 
     # reads csv when checkFunc reports a change
     valueFunc = function() {
       data <- readr::read_csv(
-        "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVrMGhklEZl3pTLkxNieIO94BCYsWT9EEkLaO2iyD1CYBkmX_A3zIMpdrLEnJsydrC7oH1nDDEuL8j/pub?gid=0&single=true&output=csv"
+        csv_file_path,
+        skip = 1
       ) |>
         dplyr::select(
           -c(form_response_time, sampler_email, sampler_initials),
