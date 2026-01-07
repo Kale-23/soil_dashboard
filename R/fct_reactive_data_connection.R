@@ -47,13 +47,13 @@ reactive_poll_connection <- function(session, last_updated_func, csv_file_path) 
         ) |>
         dplyr::mutate(sampling_date = lubridate::mdy(sampling_date), ) |>
         dplyr::rename(date = sampling_date) |>
-        dplyr::filter(!dplyr::if_all(everything(), is.na))
+        dplyr::filter(!dplyr::if_all(dplyr::everything(), is.na))
 
       #data <- data[seq_len(nrow(data) - 3), ]
 
       data_pasture <- data |>
         dplyr::select(dplyr::contains("pasture"), date) |>
-        dplyr::filter(!dplyr::if_all(everything(), is.na)) |>
+        dplyr::filter(!dplyr::if_all(dplyr::everything(), is.na)) |>
         dplyr::mutate(
           avg_snow_depth = rowMeans(
             dplyr::across(dplyr::contains("snow_depth")),
@@ -77,7 +77,7 @@ reactive_poll_connection <- function(session, last_updated_func, csv_file_path) 
 
       data_canopy <- data |>
         dplyr::select(dplyr::contains("canopy"), date) |>
-        dplyr::filter(!dplyr::if_all(everything(), is.na)) |>
+        dplyr::filter(!dplyr::if_all(dplyr::everything(), is.na)) |>
         dplyr::mutate(
           avg_snow_depth = rowMeans(
             dplyr::across(dplyr::contains("snow_depth")),

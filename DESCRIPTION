@@ -21,8 +21,7 @@ Imports:
     readr,
     shiny,
     stringr,
-    tidyr,
-    lisa
+    tidyr
 Suggests:
     knitr,
     rmarkdown,
@@ -44,4 +43,4 @@ Collate:
     'mod_gen_ui.R'
     'mod_global_ui.R'
     'run_app.R'
-    'utils_gen_utils.R'
+    'utils.R'

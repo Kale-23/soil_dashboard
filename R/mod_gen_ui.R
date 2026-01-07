@@ -93,8 +93,8 @@ mod_gen_server <- function(id, data, global_filters) {
       req(data())
 
       df <- data() |>
-        dplyr::select(dplyr::where(is.numeric)) |>
-        dplyr::select(-dplyr::any_of(non_dygraph_numeric_cols())) #TODO: update these
+        dplyr::select(dplyr::where(is.numeric)) #|>
+      #dplyr::select(-dplyr::any_of(non_dygraph_numeric_cols())) #TODO: update these
 
       cols <- colnames(df) # exclude the first column (date)
       col_names <- col_names_conversions()[cols]

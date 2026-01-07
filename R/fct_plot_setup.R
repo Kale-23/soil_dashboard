@@ -91,7 +91,7 @@ plotly_timeseries <- function(df, new_col_name, seasonal) {
 prepare_plot_data <- function(data, col, date_type) {
   if (date_type == "Seasonal") {
     data |>
-      dplyr::select(date, site_name, value = all_of(col)) |>
+      dplyr::select(date, site_name, value = dplyr::all_of(col)) |>
       # calculate water year (July 1 - June 30)
       dplyr::mutate(
         water_year = dplyr::if_else(
@@ -117,7 +117,7 @@ prepare_plot_data <- function(data, col, date_type) {
       dplyr::arrange(date)
   } else {
     data |>
-      dplyr::select(date, site_name, value = all_of(col)) |>
+      dplyr::select(date, site_name, value = dplyr::all_of(col)) |>
       dplyr::mutate(site_name = stringr::str_to_title(site_name)) |>
       tidyr::pivot_wider(
         names_from = "site_name",

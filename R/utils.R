@@ -6,10 +6,27 @@
 #'
 #' @noRd
 
-non_dygraph_numeric_cols <- function() {
-  #c("water_year", "year", "month", "day", "hour", "minute", "frost_tube_id", "pits_tube_id")
-  c()
-}
+# Silence R CMD check NOTES for NSE variables used in Shiny / tidyverse code
+utils::globalVariables(c(
+  # metadata
+  "site_name",
+  "water_year",
+  "sampling_date",
+  "form_response_time",
+  "sampler_email",
+  "sampler_initials",
+
+  # measurements
+  "swe",
+  "albedo",
+  "avg_snow_depth",
+  "avg_shallow_frost_depth",
+  "avg_max_frost_depth",
+  "avg_thaw_depth",
+  "surface_temperature_celsius",
+  "snow_depth_centimeters"
+))
+
 
 col_names_conversions <- function() {
   c(
