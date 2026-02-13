@@ -18,7 +18,7 @@ app_server <- function(input, output, session) {
   full_dataset <- reactive_poll_connection(
     session,
     last_updated,
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVrMGhklEZl3pTLkxNieIO94BCYsWT9EEkLaO2iyD1CYBkmX_A3zIMpdrLEnJsydrC7oH1nDDEuL8j/pub?gid=0&single=true&output=csv"
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVrMGhklEZl3pTLkxNieIO94BCYsWT9EEkLaO2iyD1CYBkmX_A3zIMpdrLEnJsydrC7oH1nDDEuL8j/pub?gid=813316319&single=true&output=csv"
   )
 
   global_filters <- mod_global_server("global_1", full_dataset)

@@ -45,7 +45,7 @@ reactive_poll_connection <- function(session, last_updated_func, csv_file_path) 
           -c(form_response_time, sampler_email, sampler_initials),
           -dplyr::contains(c("notes", "weight", "radiation")),
         ) |>
-        dplyr::mutate(sampling_date = lubridate::mdy(sampling_date), ) |>
+        dplyr::mutate(sampling_date = lubridate::mdy(sampling_date)) |>
         dplyr::rename(date = sampling_date) |>
         dplyr::filter(!dplyr::if_all(dplyr::everything(), is.na))
 
@@ -55,20 +55,38 @@ reactive_poll_connection <- function(session, last_updated_func, csv_file_path) 
         dplyr::select(dplyr::contains("pasture"), date) |>
         dplyr::filter(!dplyr::if_all(dplyr::everything(), is.na)) |>
         dplyr::mutate(
+          # these all have to contain tube, column name, but not 4 as 4th tube is not the same data
           avg_snow_depth = rowMeans(
-            dplyr::across(dplyr::contains("snow_depth")),
+            dplyr::across(
+              dplyr::contains("snow_depth") &
+                dplyr::contains("tube") &
+                !dplyr::contains("4")
+            ),
             na.rm = TRUE
           ),
           avg_shallow_frost_depth = rowMeans(
-            dplyr::across(dplyr::contains("shallow_frost_depth")),
+            dplyr::across(
+              dplyr::contains("shallow_frost_depth") &
+                dplyr::contains("tube") &
+                !dplyr::contains("4")
+            ),
             na.rm = TRUE
           ),
           avg_max_frost_depth = rowMeans(
-            dplyr::across(dplyr::contains("max_frost_depth")),
+            dplyr::across(
+              dplyr::contains("max_frost_depth") &
+                dplyr::contains("tube") &
+                !dplyr::contains("4")
+            ),
+
             na.rm = TRUE
           ),
           avg_thaw_depth = rowMeans(
-            dplyr::across(dplyr::contains("thaw_depth")),
+            dplyr::across(
+              dplyr::contains("thaw_depth") &
+                dplyr::contains("tube") &
+                !dplyr::contains("4")
+            ),
             na.rm = TRUE
           )
         ) |>
@@ -80,19 +98,31 @@ reactive_poll_connection <- function(session, last_updated_func, csv_file_path) 
         dplyr::filter(!dplyr::if_all(dplyr::everything(), is.na)) |>
         dplyr::mutate(
           avg_snow_depth = rowMeans(
-            dplyr::across(dplyr::contains("snow_depth")),
+            dplyr::across(
+              dplyr::contains("snow_depth") &
+                dplyr::contains("tube")
+            ),
             na.rm = TRUE
           ),
           avg_shallow_frost_depth = rowMeans(
-            dplyr::across(dplyr::contains("shallow_frost_depth")),
+            dplyr::across(
+              dplyr::contains("shallow_frost_depth") &
+                dplyr::contains("tube")
+            ),
             na.rm = TRUE
           ),
           avg_max_frost_depth = rowMeans(
-            dplyr::across(dplyr::contains("max_frost_depth")),
+            dplyr::across(
+              dplyr::contains("max_frost_depth") &
+                dplyr::contains("tube")
+            ),
             na.rm = TRUE
           ),
           avg_thaw_depth = rowMeans(
-            dplyr::across(dplyr::contains("thaw_depth")),
+            dplyr::across(
+              dplyr::contains("thaw_depth") &
+                dplyr::contains("tube")
+            ),
             na.rm = TRUE
           )
         ) |>
